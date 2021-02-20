@@ -9,8 +9,14 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
-func handleTraffic(ctx context.Context, clashHost string) {
-	ch := dialWebsocketChan(ctx, fmt.Sprintf("ws://%s/traffic", clashHost))
+func handleTraffic(ctx context.Context, clashHost string, clashToken string) {
+	var clashUrl string
+	if clashToken == "" {
+		clashUrl = fmt.Sprintf("ws://%s/traffic", clashHost)
+	} else {
+		clashUrl = fmt.Sprintf("ws://%s/traffic?token=%s", clashHost, clashToken)
+	}
+	ch := dialWebsocketChan(ctx, clashUrl)
 
 	for buf := range ch {
 		record := struct {
@@ -35,8 +41,14 @@ func handleTraffic(ctx context.Context, clashHost string) {
 	}
 }
 
-func handleTracing(ctx context.Context, clashHost string) {
-	ch := dialWebsocketChan(ctx, fmt.Sprintf("ws://%s/profile/tracing", clashHost))
+func handleTracing(ctx context.Context, clashHost string, clashToken string) {
+	var clashUrl string
+	if clashToken == "" {
+		clashUrl = fmt.Sprintf("ws://%s/traffic", clashHost)
+	} else {
+		clashUrl = fmt.Sprintf("ws://%s/traffic?token=%s", clashHost, clashToken)
+	}
+	ch := dialWebsocketChan(ctx, clashUrl)
 	for buf := range ch {
 		record := Basic{}
 

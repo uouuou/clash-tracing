@@ -23,7 +23,7 @@ func main() {
 	token := envOrDefault("INFLUXDB_TOKEN", "")
 
 	clashHost := envOrDefault("CLASH_HOST", "localhost:9090")
-
+	clashToken := envOrDefault("CLASH_TOKEN", "")
 	client := influxdb2.NewClient(fmt.Sprintf("http://%s", host), token)
 	defer client.Close()
 
@@ -31,8 +31,8 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	go handleTraffic(ctx, clashHost)
-	go handleTracing(ctx, clashHost)
+	go handleTraffic(ctx, clashHost, clashToken)
+	go handleTracing(ctx, clashHost, clashToken)
 
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
